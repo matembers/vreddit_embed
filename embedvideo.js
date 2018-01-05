@@ -3,7 +3,6 @@
 //
 var findSrcUrls = function(url,cb)
 {
-
   //run reddit api request if no v.redd.it link
   $.getJSON("https://www.reddit.com/search/.json",
     {
@@ -12,8 +11,9 @@ var findSrcUrls = function(url,cb)
     }, function(data) {
       var audioUrl = "";
       var videoUrl = "";
-
-      if (data.length > 0)
+      
+      var dataIsString = typeof data === "string"; //something went wrong
+      if (!dataIsString && data.length > 0)
       {
         var posts = data[0].data;
         if (posts.children.length > 0)
@@ -82,12 +82,12 @@ function tieAudioToVideo(player,src)
 //
 // Load the video (and audio) with the source urls
 //
-function setupVideoAudioPlayer(src)
+function setupVideoAudioPlayer(vid,src)
 {
   if (!src.video) return;
 
-  videojs('my-video').ready(function () {
-    var player = videojs('my-video');
+  videojs(vid).ready(function () {
+    var player = this;
     player.pause();
     console.log(player);
     player.src({type: 'video/mp4', src: src.video}); //https://v.redd.it/594vcj9zhbiz/DASH_4_8_M"});
@@ -102,7 +102,7 @@ function setupVideoAudioPlayer(src)
 }
 
 $(document).ready(function() {
-  
+  var vid = "my-video"; //id of video dom object
   var vredditURL = getParam("v");
   if (!vredditURL)
   {
@@ -110,7 +110,14 @@ $(document).ready(function() {
   }
 
   findSrcUrls(vredditURL, function(src) {
-    setupVideoAudioPlayer(src);
+    if (!src.video)
+    {
+      videojs(vid).ready(function() {
+        this.error("Bad v.redd.it url or failed to find reddit post:"+vredditURL);
+      });
+      return;
+    }
+    setupVideoAudioPlayer(vid,src);
   });
 });
 
