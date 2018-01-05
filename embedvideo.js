@@ -8,38 +8,34 @@ var findSrcUrls = function(url,cb)
   $.getJSON("https://www.reddit.com/search/.json",
     {
       "limit":1,
-      "q":"https://v.redd.it/s4vz87dd45801"
+      "q":url
     }, function(data) {
-      var audio = "";
-      var video = "";
+      var audioUrl = "";
+      var videoUrl = "";
 
-            console.log(data);
       if (data.length > 0)
       {
         var posts = data[0].data;
-            console.log(posts);
         if (posts.children.length > 0)
         {
           var post = posts.children[0].data;
-            console.log(post);
           if (post.domain === "v.redd.it") //ensure v.redd.it post
           {
             var videoData = post.media.reddit_video; //should exist based on domain
-            console.log(videoData);
             if (videoData.fallback_url.startsWith(url)) //this video url should match
             {
-              video = videoData.fallback_url;
-              if (videoData.is_gif)
+              videoUrl = videoData.fallback_url;
+              if (!videoData.is_gif)
               {
-                audio = url + "/audio";
+                audioUrl = url + "/audio";
               }
             }
           }
         }
       }
       cb({
-        videoUrl: video,
-        audioUrl: audio,
+        video: videoUrl,
+        audio: audioUrl,
       });
     });
 
@@ -62,31 +58,15 @@ function getParam(param)
   return "";
 }
 
-$(document).ready(function() {
-  
-  var vredditURL = getParam("v");
-  if (!vredditURL)
-  {
-    return;
-  }
-
-  findSrcUrls(vredditURL, function(src) {
-    console.log(src);
-  });
-  //console.log(srcUrls.videoUrl());
-  //console.log(srcUrls.audioUrl());
-
-  videojs('my-video').ready(function () {
-    var player = videojs('my-video');
-    player.pause();
-    console.log(player);
-    player.src({type: 'video/mp4', src:"https://v.redd.it/s4vz87dd45801/DASH_9_6_M"}); //https://v.redd.it/594vcj9zhbiz/DASH_4_8_M"});
-
+//
+// Very basic attempt to tie video player functions to playing the audio source
+//
+function tieAudioToVideo(player,src)
+{
     var audio = new Audio();
     audio.id = "sound";
     audio.src = "https://v.redd.it/s4vz87dd45801/audio"
 
-    
     player.on("timeupdate", function(d) {
       console.log(player.currentTime());
       audio.currentTime = player.currentTime();
@@ -97,12 +77,40 @@ $(document).ready(function() {
     player.on("volumechange", function(d) {
       audio.volume = player.volume();
     });
+}
 
-    //finally load 
+//
+// Load the video (and audio) with the source urls
+//
+function setupVideoAudioPlayer(src)
+{
+  if (!src.video) return;
+
+  videojs('my-video').ready(function () {
+    var player = videojs('my-video');
+    player.pause();
+    console.log(player);
+    player.src({type: 'video/mp4', src: src.video}); //https://v.redd.it/594vcj9zhbiz/DASH_4_8_M"});
+
+    if (src.audio)
+    {
+      tieAudioToVideo(player,src);
+    }
+    
     player.load();
-    player.currentTime(2);
-    //player.play();
-    //audio.play();
-    });
+  });
+}
+
+$(document).ready(function() {
+  
+  var vredditURL = getParam("v");
+  if (!vredditURL)
+  {
+    return;
+  }
+
+  findSrcUrls(vredditURL, function(src) {
+    setupVideoAudioPlayer(src);
+  });
 });
 
