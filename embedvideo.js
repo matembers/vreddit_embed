@@ -13,9 +13,19 @@ var findSrcUrls = function(url,cb)
       var videoUrl = "";
       
       var dataIsString = typeof data === "string"; //something went wrong
-      if (!dataIsString && data.length > 0)
+
+      if (!dataIsString) //expecting a object response
       {
-        var posts = data[0].data;
+        var posts = null;
+        if ($.isArray(data)) //if we have an array response take the first element
+        {
+          posts = data[0].data; //shouldn't be getting an empty list?
+        }
+        else
+        {
+          posts = data.data;
+        }
+          
         if (posts.children.length > 0)
         {
           var post = posts.children[0].data;
@@ -65,10 +75,9 @@ function tieAudioToVideo(player,src)
 {
     var audio = new Audio();
     audio.id = "sound";
-    audio.src = "https://v.redd.it/s4vz87dd45801/audio"
+    audio.src = src.audio
 
     player.on("timeupdate", function(d) {
-      console.log(player.currentTime());
       audio.currentTime = player.currentTime();
     });
 
@@ -89,8 +98,7 @@ function setupVideoAudioPlayer(vid,src)
   videojs(vid).ready(function () {
     var player = this;
     player.pause();
-    console.log(player);
-    player.src({type: 'video/mp4', src: src.video}); //https://v.redd.it/594vcj9zhbiz/DASH_4_8_M"});
+    player.src({type: 'video/mp4', src: src.video});
 
     if (src.audio)
     {
@@ -106,6 +114,12 @@ $(document).ready(function() {
   var vredditURL = getParam("v");
   if (!vredditURL)
   {
+    videojs(vid).ready(function() {
+      this.error("Supply the v.redd.it URL in the address bar:\n"+
+        window.location.host + window.location.pathname +
+        "?v=https://v.redd.it/594vcj9zhbiz"
+        );
+    });
     return;
   }
 
