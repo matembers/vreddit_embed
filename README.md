@@ -15,7 +15,8 @@ Note Video.js is used purely because it shows a mute button/volume slider even w
 # Examples
 
 ## Video
-TODO
+<a href="https://m-mullins.github.io/vreddit_embed/?v=https://v.redd.it/594vcj9zhbiz" target="_blank"><img src="https://b.thumbs.redditmedia.com/wrqHcFGa_oXRVvH0jT4V9omLVSwdnfTPhNYjqcYGPwo.jpg" alt="video test" width="240" border="10" /></a>
+
 
 ## Gif
-<a href="https://m-mullins.github.io/vreddit_embed/?v=https://v.redd.it/fxc6a56wrb801" target="_blank"><img src="https://b.thumbs.redditmedia.com/OZuSnzCHT1f1nQVy-6SoCt9sLoeZZhNJAvDKVr6DBwg.jpg" alt="gif test" width="240" height="180" border="10" /></a>
+<a href="https://m-mullins.github.io/vreddit_embed/?v=https://v.redd.it/fxc6a56wrb801" target="_blank"><img src="https://b.thumbs.redditmedia.com/OZuSnzCHT1f1nQVy-6SoCt9sLoeZZhNJAvDKVr6DBwg.jpg" alt="gif test" width="240" border="10" /></a>
