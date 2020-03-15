@@ -105,7 +105,8 @@ function setupVideoAudioPlayer(vid,src)
       tieAudioToVideo(player,src);
     }
     
-    player.load();
+    player.load();    
+    player.play();
   });
 }
 
