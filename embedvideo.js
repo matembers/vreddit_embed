@@ -105,7 +105,8 @@ function setupVideoAudioPlayer(vid,src)
       tieAudioToVideo(player,src);
     }
     
-    player.height(560); 
+    heightbody = $( window ).height()-20;
+    player.height(heightbody); 
     player.load();    
     player.play();
   });
